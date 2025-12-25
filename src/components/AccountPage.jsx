@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Calendar, TrendingUp, Target, CheckCircle2, LogOut, History } from 'lucide-react';
+import { User, Mail, Calendar, TrendingUp, Target, CheckCircle2, LogOut, History, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { API_BASE } from '../utils/api';
 import HistoryDashboard from './HistoryDashboard';
 
-export default function AccountPage({ onLogout }) {
+export default function AccountPage({ onLogout, onGoToMain }) {
     const { user, logout, getAuthHeaders } = useAuth();
     const { t } = useLanguage();
     const [accountData, setAccountData] = useState(null);
@@ -81,8 +81,9 @@ export default function AccountPage({ onLogout }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4 md:p-8 text-white">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950 via-indigo-950 to-blue-950 p-4 md:p-8 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-blue-500/10 pointer-events-none"></div>
+            <div className="max-w-4xl mx-auto relative z-10">
                 <div className="bg-gray-900/80 backdrop-blur-lg rounded-2xl p-8 border border-gray-700/50 mb-6 shadow-2xl">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-4">
@@ -142,13 +143,26 @@ export default function AccountPage({ onLogout }) {
                         </div>
                     </div>
 
-                    <button
-                        onClick={() => setShowHistory(true)}
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2 border border-purple-500/30"
-                    >
-                        <History className="w-5 h-5" />
-                        {t('viewFullHistory')}
-                    </button>
+                    <div className="space-y-3">
+                        <button
+                            onClick={() => {
+                                if (onGoToMain) {
+                                    onGoToMain();
+                                }
+                            }}
+                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2 border border-purple-500/30"
+                        >
+                            <Sparkles className="w-5 h-5" />
+                            {t('goToFutureVision')}
+                        </button>
+                        <button
+                            onClick={() => setShowHistory(true)}
+                            className="w-full bg-gray-800/60 hover:bg-gray-700/60 text-white py-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 border border-gray-700/50"
+                        >
+                            <History className="w-5 h-5" />
+                            {t('viewFullHistory')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

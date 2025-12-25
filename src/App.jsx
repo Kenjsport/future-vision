@@ -310,7 +310,10 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
             setPage('login');
             return null;
         }
-        return <AccountPage onLogout={() => { logout(); setPage('landing'); }} />;
+        return <AccountPage 
+            onLogout={() => { logout(); setPage('landing'); }} 
+            onGoToMain={() => { setPage('main'); }}
+        />;
     }
 
     return (

@@ -74,6 +74,7 @@ const translations = {
         continueWithoutRegistration: 'Continue without registration',
         goToAccount: 'Go to Account',
         continueToApp: 'Continue to App',
+        goToFutureVision: 'Go to FutureVision',
         // Login/Register
         email: 'Email',
         password: 'Password',
@@ -208,6 +209,7 @@ const translations = {
         continueWithoutRegistration: 'Продолжить без регистрации',
         goToAccount: 'Перейти в аккаунт',
         continueToApp: 'Продолжить в приложение',
+        goToFutureVision: 'Перейти в FutureVision',
         // Login/Register
         email: 'Email',
         password: 'Пароль',
@@ -342,6 +344,7 @@ const translations = {
         continueWithoutRegistration: 'Շարունակել առանց գրանցման',
         goToAccount: 'Գնալ հաշիվ',
         continueToApp: 'Շարունակել հավելվածում',
+        goToFutureVision: 'Գնալ FutureVision',
         // Login/Register
         email: 'Էլ. փոստ',
         password: 'Գաղտնաբառ',
