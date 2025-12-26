@@ -18,9 +18,6 @@ export default function LearningResources({ skill }) {
         try {
             setLoading(true);
             const response = await fetch(`${API_BASE}/api/resources/${encodeURIComponent(skill)}`);
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'LearningResources.jsx:17',message:'fetchResources response',data:{ok:response.ok,status:response.status,skill},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
-            // #endregion
             if (response.ok) {
                 const data = await response.json();
                 setResources(data.resources);

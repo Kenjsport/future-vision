@@ -17,9 +17,6 @@ export default function ComparisonView({ userId, predictionIds, onClose }) {
     const fetchPredictions = async () => {
         try {
             const response = await fetch(`${API_BASE}/api/predictions/${userId}`);
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ComparisonView.jsx:16',message:'fetchPredictions response',data:{ok:response.ok,status:response.status,userId,predictionIdsCount:predictionIds?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
-            // #endregion
             if (response.ok) {
                 const data = await response.json();
                 const filtered = (data.predictions || []).filter(p => predictionIds.includes(p.id));

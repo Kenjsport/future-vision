@@ -9,9 +9,6 @@ export default function ExportShare({ prediction, skill, level, timeframe, userI
     const [copied, setCopied] = useState(false);
 
     const generateShareLink = () => {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ExportShare.jsx:9',message:'generateShareLink called',data:{hasPredictionId:!!predictionId,hasPredictionObjId:!!prediction?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         const link = `${window.location.origin}?share=${predictionId || prediction?.id || 'temp'}`;
         setShareLink(link);
         return link;

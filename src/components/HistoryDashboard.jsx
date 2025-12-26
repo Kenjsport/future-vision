@@ -18,9 +18,6 @@ export default function HistoryDashboard({ userId, onSelectPrediction, onCompare
     const fetchPredictions = async () => {
         try {
             const response = await fetch(`${API_BASE}/api/predictions/${userId}`);
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'HistoryDashboard.jsx:17',message:'fetchPredictions response',data:{ok:response.ok,status:response.status,userId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
-            // #endregion
             if (response.ok) {
                 const data = await response.json();
                 setPredictions(data.predictions || []);

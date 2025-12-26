@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Loader2, Zap, History, Home, LogOut, Globe, User } from 'lucide-react';
+import { Sparkles, Loader2, Zap, History, Home, LogOut, Globe, User, BarChart3 } from 'lucide-react';
 import Landing from './components/Landing';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -11,6 +11,13 @@ import ExportShare from './components/ExportShare';
 import LearningResources from './components/LearningResources';
 import ComparisonView from './components/ComparisonView';
 import TimeHorizonSlider from './components/TimeHorizonSlider';
+import Notifications from './components/Notifications';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import SkillRecommendations from './components/SkillRecommendations';
+import JobMarket from './components/JobMarket';
+import Achievements from './components/Achievements';
+import InterviewPrep from './components/InterviewPrep';
+import LearningRoadmap from './components/LearningRoadmap';
 import { useLanguage } from './contexts/LanguageContext';
 import { useAuth } from './contexts/AuthContext';
 import { API_BASE } from './utils/api';
@@ -20,7 +27,7 @@ export default function App() {
     const { t, language, changeLanguage } = useLanguage();
     const { user: authUser, isAuthenticated, logout } = useAuth();
     const [page, setPage] = useState('landing'); // landing, login, register, main, account
-    const [view, setView] = useState('main'); // main, history, comparison
+    const [view, setView] = useState('main'); // main, history, comparison, analytics
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -160,15 +167,8 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
                 })
             });
 
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:99',message:'API response received',data:{ok:response.ok,status:response.status,statusText:response.statusText},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
-            
             if (!response.ok) {
                 const errorText = await response.text();
-                // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:103',message:'API response not ok',data:{status:response.status,errorText},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-                // #endregion
                 throw new Error(`API Error: ${response.status} ${errorText}`);
             }
             
@@ -188,9 +188,6 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
             if (jsonMatch) {
                 try {
                     const parsed = JSON.parse(jsonMatch[0]);
-                    // #region agent log
-                    fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:126',message:'JSON parsed successfully',data:{hasTrajectory:!!parsed.trajectory,hasMilestones:!!parsed.milestones,milestoneCount:parsed.milestones?.length||0,isArray:Array.isArray(parsed.milestones)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-                    // #endregion
                     
                     // Validate parsed data structure
                     if (!parsed.milestones || !Array.isArray(parsed.milestones)) {
@@ -221,42 +218,36 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
                     }
                     
                     setPredictions(parsed);
-                } catch (parseError) {
-                    // #region agent log
-                    fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:140',message:'JSON parse error',data:{error:parseError.message,jsonMatchLength:jsonMatch[0]?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'N'})}).catch(()=>{});
-                    // #endregion
-                    throw new Error(`Failed to parse JSON: ${parseError.message}`);
-                }
-                
-                // Save prediction to backend
-                const userId = authUser?.email || 'guest';
-                try {
-                    const saveResponse = await fetch(`${API_BASE}/api/predictions/save`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            userId,
-                            skill: currentSkill,
-                            level: currentLevel,
-                            timeframe,
-                            predictions: parsed
-                        })
-                    });
-                    // #region agent log
-                    fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:132',message:'Save prediction response',data:{ok:saveResponse.ok,status:saveResponse.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-                    // #endregion
-                    if (saveResponse.ok) {
-                        const saveData = await saveResponse.json();
-                        if (saveData.prediction) {
-                            setCurrentPredictionId(saveData.prediction.id);
+                    
+                    // Save prediction to backend (moved inside try block so parsed is in scope)
+                    const userId = authUser?.email || 'guest';
+                    try {
+                        const saveResponse = await fetch(`${API_BASE}/api/predictions/save`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId,
+                                skill: currentSkill,
+                                level: currentLevel,
+                                timeframe,
+                                predictions: parsed
+                            })
+                        });
+                        if (saveResponse.ok) {
+                            const saveData = await saveResponse.json();
+                            if (saveData.prediction) {
+                                setCurrentPredictionId(saveData.prediction.id);
+                            }
+                        } else {
+                            const errorText = await saveResponse.text();
+                            console.error('Failed to save prediction:', errorText);
                         }
-                    } else {
-                        const errorText = await saveResponse.text();
-                        console.error('Failed to save prediction:', errorText);
+                    } catch (saveErr) {
+                        console.error('Error saving prediction:', saveErr);
+                        // Continue even if save fails
                     }
-                } catch (saveErr) {
-                    console.error('Error saving prediction:', saveErr);
-                    // Continue even if save fails
+                } catch (parseError) {
+                    throw new Error(`Failed to parse JSON: ${parseError.message}`);
                 }
             } else {
                 throw new Error('Could not parse JSON in model response');
@@ -285,6 +276,23 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
     const handleCompare = (ids) => {
         setComparisonIds(ids);
         setView('comparison');
+    };
+
+    const handleViewPrediction = async (predictionId) => {
+        try {
+            const response = await fetch(`${API_BASE}/api/predictions/${getUserId()}/${predictionId}`);
+            if (response.ok) {
+                const data = await response.json();
+                handleSelectPrediction(data.prediction);
+            }
+        } catch (error) {
+            console.error('Error loading prediction:', error);
+        }
+    };
+
+    const handleSelectRecommendedSkill = (skill) => {
+        setCurrentSkill(skill);
+        setView('main');
     };
 
     const getUserId = () => {
@@ -334,13 +342,33 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
                     </div>
                     <div className="flex items-center gap-2">
                         {isAuthenticated && (
-                            <button
-                                onClick={() => setPage('account')}
-                                className="px-4 py-2 rounded-lg font-semibold bg-gray-800/60 text-white hover:bg-gray-700/60 border border-gray-700/50 transition-all flex items-center gap-2"
-                            >
-                                <User className="w-4 h-4" />
-                                {t('account')}
-                            </button>
+                            <>
+                                <Notifications 
+                                    userId={getUserId()} 
+                                    onViewPrediction={handleViewPrediction}
+                                />
+                                <button
+                                    onClick={() => {
+                                        setView('analytics');
+                                        setRefreshHistory(prev => prev + 1);
+                                    }}
+                                    className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                                        view === 'analytics'
+                                            ? 'bg-purple-600 text-white border border-purple-500/30'
+                                            : 'bg-gray-800/60 text-white hover:bg-gray-700/60 border border-gray-700/50'
+                                    }`}
+                                >
+                                    <BarChart3 className="w-4 h-4" />
+                                    {t('analytics')}
+                                </button>
+                                <button
+                                    onClick={() => setPage('account')}
+                                    className="px-4 py-2 rounded-lg font-semibold bg-gray-800/60 text-white hover:bg-gray-700/60 border border-gray-700/50 transition-all flex items-center gap-2"
+                                >
+                                    <User className="w-4 h-4" />
+                                    {t('account')}
+                                </button>
+                            </>
                         )}
                         <div className="relative" ref={languageMenuRef}>
                             <button
@@ -456,8 +484,23 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
                     />
                 )}
 
-                {view === 'main' && (
+                {view === 'analytics' && (
+                    <AnalyticsDashboard
+                        userId={getUserId()}
+                        onClose={() => setView('main')}
+                    />
+                )}
+
+                        {view === 'main' && (
                     <>
+                        {isAuthenticated && (
+                            <div className="mb-6 flex justify-end">
+                                <SkillRecommendations 
+                                    userId={getUserId()}
+                                    onSelectSkill={handleSelectRecommendedSkill}
+                                />
+                            </div>
+                        )}
 
                 <div className="bg-gray-900/80 backdrop-blur-lg rounded-2xl p-6 md:p-8 mb-8 border border-gray-700/50 shadow-2xl">
                     <div className="space-y-6">
@@ -556,7 +599,17 @@ Create a realistic growth forecast in JSON format. Respond ONLY with JSON withou
                                     onProgressUpdate={() => setRefreshHistory(prev => prev + 1)}
                                     skill={currentSkill}
                                 />
+                                <LearningRoadmap 
+                                    skill={currentSkill} 
+                                    level={currentLevel}
+                                    timeframe={timeframe}
+                                />
+                                <JobMarket skill={currentSkill} />
+                                <InterviewPrep skill={currentSkill} level={currentLevel} />
                                 <LearningResources skill={currentSkill} />
+                                {isAuthenticated && (
+                                    <Achievements userId={getUserId()} />
+                                )}
                             </>
                         )}
                     </>

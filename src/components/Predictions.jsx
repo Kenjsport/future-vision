@@ -13,9 +13,6 @@ export default function Predictions({ predictions, predictionId, userId, onProgr
     const loadProgress = useCallback(async () => {
         try {
             const response = await fetch(`${API_BASE}/api/predictions/${userId}/${predictionId}`);
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Predictions.jsx:28',message:'loadProgress response',data:{ok:response.ok,status:response.status,userId,predictionId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-            // #endregion
             if (response.ok) {
                 const data = await response.json();
                 if (data.prediction?.progress?.milestones && Array.isArray(data.prediction.progress.milestones)) {
@@ -50,10 +47,6 @@ export default function Predictions({ predictions, predictionId, userId, onProgr
     }, [predictions, predictionId, userId, loadProgress]);
 
     const toggleMilestone = async (idx) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Predictions.jsx:38',message:'toggleMilestone called',data:{idx,milestoneProgressLength:milestoneProgress.length,hasPredictionId:!!predictionId,hasUserId:!!userId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
-        // #endregion
-        
         if (idx < 0 || idx >= milestoneProgress.length) {
             console.error('Invalid milestone index:', idx);
             return;
@@ -86,9 +79,6 @@ export default function Predictions({ predictions, predictionId, userId, onProgr
                     completed: newProgress[idx].completed
                 })
             });
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Predictions.jsx:54',message:'toggleMilestone response',data:{ok:response.ok,status:response.status,milestoneIndex:idx},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-            // #endregion
             if (response.ok && onProgressUpdate) {
                 onProgressUpdate();
             }
@@ -98,10 +88,6 @@ export default function Predictions({ predictions, predictionId, userId, onProgr
     };
 
     const saveNote = async (idx) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Predictions.jsx:68',message:'saveNote called',data:{idx,milestoneProgressLength:milestoneProgress.length,noteTextLength:noteText.length,hasPredictionId:!!predictionId,hasUserId:!!userId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'L'})}).catch(()=>{});
-        // #endregion
-        
         if (idx < 0 || idx >= milestoneProgress.length) {
             console.error('Invalid milestone index:', idx);
             setEditingNote(null);
@@ -133,9 +119,6 @@ export default function Predictions({ predictions, predictionId, userId, onProgr
                     notes: noteText
                 })
             });
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Predictions.jsx:82',message:'saveNote response',data:{ok:response.ok,status:response.status,milestoneIndex:idx},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'})}).catch(()=>{});
-            // #endregion
             if (response.ok) {
                 setEditingNote(null);
                 if (onProgressUpdate) onProgressUpdate();
@@ -188,9 +171,6 @@ export default function Predictions({ predictions, predictionId, userId, onProgr
                 <div className="space-y-4">
                     {predictions.milestones && Array.isArray(predictions.milestones) && predictions.milestones.map((milestone, idx) => {
                         const progress = milestoneProgress[idx] || { completed: false, notes: '', completedAt: null };
-                        // #region agent log
-                        fetch('http://127.0.0.1:7242/ingest/71323d95-debc-4ecf-a311-79ceedb88b4e',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Predictions.jsx:155',message:'Rendering milestone',data:{idx,hasMilestone:!!milestone,hasProgress:!!progress,milestoneProgressLength:milestoneProgress.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'M'})}).catch(()=>{});
-                        // #endregion
                         return (
                             <div
                                 key={idx}
